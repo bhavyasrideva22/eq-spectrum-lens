@@ -1,12 +1,44 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { AssessmentIntro } from "@/components/AssessmentIntro";
+import { Assessment } from "@/components/Assessment";
+import { Results } from "@/components/Results";
+
+type AppState = 'intro' | 'assessment' | 'results';
 
 const Index = () => {
+  const [currentState, setCurrentState] = useState<AppState>('intro');
+  const [assessmentResults, setAssessmentResults] = useState<Record<string, string>>({});
+
+  const handleStartAssessment = () => {
+    setCurrentState('assessment');
+  };
+
+  const handleAssessmentComplete = (answers: Record<string, string>) => {
+    setAssessmentResults(answers);
+    setCurrentState('results');
+  };
+
+  const handleRetakeAssessment = () => {
+    setAssessmentResults({});
+    setCurrentState('intro');
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen">
+      {currentState === 'intro' && (
+        <AssessmentIntro onStartAssessment={handleStartAssessment} />
+      )}
+      
+      {currentState === 'assessment' && (
+        <Assessment onComplete={handleAssessmentComplete} />
+      )}
+      
+      {currentState === 'results' && (
+        <Results 
+          answers={assessmentResults} 
+          onRetake={handleRetakeAssessment}
+        />
+      )}
     </div>
   );
 };
